@@ -1,0 +1,106 @@
+name: Generate BRAT GitHub Token
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  generate-brat-token:
+    name: Generate Token for BRAT Obsidian Plugin
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Generate token file for BRAT
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p /tmp/brat
+          cat > /tmp/brat/token.txt << EOF
+          ===========================================
+           BRAT Obsidian Plugin — GitHub Token
+          ===========================================
+
+          Token: $TOKEN
+
+          Repository: https://github.com/${{ github.repository }}
+          Generated:  $(date -u '+%Y-%m-%d %H:%M UTC')
+
+          -------------------------------------------
+           HOW TO USE IN BRAT PLUGIN:
+          -------------------------------------------
+
+          1. Open Obsidian
+          2. Go to Settings → Community Plugins
+          3. Find "BRAT" and click the gear icon ⚙️
+          4. Scroll to "GitHub personal access token"
+          5. Paste the token shown above
+          6. Click Save
+
+          -------------------------------------------
+           FOR A PERMANENT TOKEN (RECOMMENDED):
+          -------------------------------------------
+
+          ⚠  IMPORTANT: This workflow token expires as soon as
+             this job completes — copy it and configure BRAT
+             immediately, then create a permanent PAT below.
+
+          Create a Personal Access Token (PAT) at:
+
+          https://github.com/settings/tokens/new
+
+          Required scope:
+            • public_repo  — for public repositories
+            • repo         — for private repositories
+
+          Description suggestion: "BRAT Obsidian Plugin"
+
+          -------------------------------------------
+           SECURITY REMINDERS:
+          -------------------------------------------
+
+          ⚠  Copy the token, then delete this file immediately
+          ⚠  Never commit this file to version control
+          ⚠  Never share this token publicly
+          ⚠  Revoke compromised tokens at:
+             https://github.com/settings/tokens
+
+          ===========================================
+          EOF
+          echo "✅ Token file created"
+
+      - name: Upload BRAT token as artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: brat-github-token
+          path: /tmp/brat/token.txt
+          retention-days: 1
+
+      - name: Write job summary
+        run: |
+          cat >> $GITHUB_STEP_SUMMARY << 'SUMMARY'
+          ## ✅ BRAT GitHub Token Generated
+
+          The token has been saved as a downloadable workflow artifact.
+
+          ### 📥 How to get your token:
+          1. Scroll down to the **Artifacts** section on this page
+          2. Click **brat-github-token** to download the ZIP file
+          3. Unzip and open `token.txt` — your token is on the `Token:` line
+
+          ### 📱 How to configure BRAT in Obsidian:
+          1. Open **Obsidian** → **Settings** → **Community Plugins**
+          2. Find **BRAT** and click the gear icon ⚙️
+          3. Scroll to **"GitHub personal access token"**
+          4. Paste the token and click **Save**
+
+          ### ⏱️ Token validity:
+          > ⚠️ **This workflow token expires as soon as this job completes.**
+          > Copy it from the artifact and configure BRAT immediately.
+
+          For a permanent token that survives beyond this job, [create a Personal Access Token (PAT)](https://github.com/settings/tokens/new?scopes=public_repo&description=BRAT+Plugin) with the `public_repo` scope (or `repo` for private repositories).
+
+          ### 🔒 Security:
+          The artifact is retained for **1 day only** and is accessible only to users with read access to this repository.
+          SUMMARY
