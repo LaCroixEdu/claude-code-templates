@@ -20,6 +20,21 @@
   - GitHub Pages integration
   - Jekyll disabled (.nojekyll)
 
+### `generate-brat-token.yml` - **BRAT OBSIDIAN PLUGIN TOKEN**
+- **Status**: ✅ ACTIVE - Token generation for Obsidian BRAT plugin
+- **Purpose**: Generates a GitHub token to link the BRAT Obsidian plugin with a GitHub account
+- **Trigger**: Manual dispatch only (`workflow_dispatch`)
+- **Features**:
+  - Generates a GitHub API token using the built-in `GITHUB_TOKEN`
+  - Saves the token and setup instructions to a downloadable artifact (retained 1 day)
+  - Writes step-by-step BRAT configuration guide to the job summary
+  - **Note**: The generated token is valid for ~24 hours. For a permanent token, [create a PAT](https://github.com/settings/tokens/new?scopes=public_repo&description=BRAT+Plugin)
+
+```bash
+# Trigger via GitHub CLI
+gh workflow run "Generate BRAT GitHub Token"
+```
+
 ### `publish-package.yml` - **PACKAGE PUBLISHING**
 - **Status**: ✅ ACTIVE - Package distribution
 - **Purpose**: Publishes CLI package to GitHub Packages
